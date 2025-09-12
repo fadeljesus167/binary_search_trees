@@ -6,6 +6,10 @@ class Node
     @left_child = nil
     @right_child = nil
   end
+
+  def has_childs?
+    @left_child || @right_child
+  end
 end
 
 class Tree
@@ -31,7 +35,8 @@ class Tree
   def insert(new_node)
     node = @root
     while !node.nil?
-      if new_node.value <= node.value
+      break if new_node.value.eql?(node.value)
+      if new_node.value < node.value
         if node.left_child.nil?
           node.left_child = new_node
           break
@@ -50,11 +55,21 @@ class Tree
   end
 
   def delete(value)
-    
+    # Case 1: Deleting a leaf node
+    node = @root
+
+    while !node.nil?
+      if node.value.eql?(value) && !node.has_childs?
+        node.value = nil
+        break
+      elsif value < node.value
+        node = node.left_child
+      else
+        node = node.right_child
+      end
+    end
   end
 end
-
-tree = Tree.new([1,2,3,4,5,6,7,8,9])
 
 def pretty_print(node = @root, prefix = '', is_left = true)
   pretty_print(node.right_child, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right_child
@@ -62,8 +77,25 @@ def pretty_print(node = @root, prefix = '', is_left = true)
   pretty_print(node.left_child, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left_child
 end
 
-pretty_print(tree.root)
+def menu(tree)
+  while true
+    print "\tBinary Search Tree\n1 - Insert\n2 - Delete\n3 - Exit\nOpc: "
+    opc = gets.chomp.to_i
 
-tree.insert(Node.new(-1))
+    case opc
+    when 1
+      puts "Write a number to insert: "
+      tree.insert(Node.new(gets.chomp.to_i))
+    when 2
+      puts "Write a number to delete: "
+      tree.delete(gets.chomp.to_i)
+    when 3
+      break
+    end
 
-pretty_print(tree.root)
+    pretty_print(tree.root)
+  end
+end
+
+tree = Tree.new([1,2,3,4,5,6,7,8,9])
+menu(tree)
