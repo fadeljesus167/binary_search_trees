@@ -58,16 +58,64 @@ class Tree
     # Case 1: Deleting a leaf node
     node = @root
 
+    if @root.value.eql?(value)
+      puts "Can't delete root node"
+      return
+    end
+
     while !node.nil?
-      if node.value.eql?(value) && !node.has_childs?
-        node.value = nil
-        break
-      elsif value < node.value
-        node = node.left_child
+      if node.value > value
+        if node.left_child.nil?
+          puts "Value not found"
+          break
+        else
+          if node.left_child.value.eql?(value)
+            if node.left_child.has_childs?
+              temp_node = node.left_child
+              if !temp_node.right_child.nil?
+                node.left_child = temp_node.right_child
+              else
+                node.left_child = temp_node.left_child
+              end
+            else
+              node.left_child = nil
+            end
+            break
+          else
+            node = node.left_child
+          end
+        end
       else
-        node = node.right_child
+        if node.right_child.nil?
+          puts "Value not found"
+          break
+        else
+          if node.right_child.value.eql?(value)
+            if node.right_child.has_childs?
+              temp_node = node.right_child
+              if !temp_node.right_child.nil?
+                node.right_child = temp_node.right_child
+              else
+                node.right_child = temp_node.left_child
+              end
+            else
+              node.right_child = nil?
+            end
+            break
+          else
+            node = node.right_child
+          end
+        end
       end
     end
+  end
+end
+
+def successor(node)
+  node = node.right_child
+
+  while !node.nil? && node.left_child.nil?
+    node = node.left_child
   end
 end
 
