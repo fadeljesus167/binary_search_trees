@@ -54,68 +54,41 @@ class Tree
     end
   end
 
-  def delete(value)
-    # Case 1: Deleting a leaf node
-    node = @root
-
-    if @root.value.eql?(value)
-      puts "Can't delete root node"
-      return
+  def delete(root, key)
+    if root.nil?
+      return root;
     end
 
-    while !node.nil?
-      if node.value > value
-        if node.left_child.nil?
-          puts "Value not found"
-          break
-        else
-          if node.left_child.value.eql?(value)
-            if node.left_child.has_childs?
-              temp_node = node.left_child
-              if !temp_node.right_child.nil?
-                node.left_child = temp_node.right_child
-              else
-                node.left_child = temp_node.left_child
-              end
-            else
-              node.left_child = nil
-            end
-            break
-          else
-            node = node.left_child
-          end
-        end
-      else
-        if node.right_child.nil?
-          puts "Value not found"
-          break
-        else
-          if node.right_child.value.eql?(value)
-            if node.right_child.has_childs?
-              temp_node = node.right_child
-              if !temp_node.right_child.nil?
-                node.right_child = temp_node.right_child
-              else
-                node.right_child = temp_node.left_child
-              end
-            else
-              node.right_child = nil?
-            end
-            break
-          else
-            node = node.right_child
-          end
-        end
+    if root.value > key
+      root.left_child = delete(root.left_child, key)
+    elsif root.value < key
+      root.right_child = delete(root.right_child, key)
+
+    else
+      if root.left_child.nil?
+        return root.right_child
       end
+
+      if root.right_child.nil?
+        return root.left_child
+      end
+
+      succ = successor(root)
+      root.value = succ.value
+      root.right_child = delete(root.right_child, succ.value)
     end
+
+    return root
   end
-end
+  
+  def successor(node)
+    node = node.right_child
 
-def successor(node)
-  node = node.right_child
+    while !node.nil? && !node.left_child.nil?
+      node = node.left_child
+    end
 
-  while !node.nil? && node.left_child.nil?
-    node = node.left_child
+    return node
   end
 end
 
@@ -136,7 +109,7 @@ def menu(tree)
       tree.insert(Node.new(gets.chomp.to_i))
     when 2
       puts "Write a number to delete: "
-      tree.delete(gets.chomp.to_i)
+      tree.delete(tree.root, gets.chomp.to_i)
     when 3
       break
     end
